@@ -14,7 +14,7 @@ class TextFileWriter:
         self.__open_file()
     
     def __del__(self):
-        if len(self.buffer) > 0:
+        if self.buffer_current_size > 0:
             self.file_handle.write(self.buffer)
         self.file_handle.close()
 
@@ -25,7 +25,7 @@ class TextFileWriter:
         return self.current_tell
     
     def write(self,str):
-        str_byte_size = len(str.encode('utf-8'))
+        str_byte_size = sys.getsizeof(str)
         if self.buffer_current_size + str_byte_size < self.buffer_max_size:
             self.buffer += str
             self.buffer_current_size += str_byte_size
@@ -36,9 +36,10 @@ class TextFileWriter:
             self.current_tell = self.file_handle.tell()
     
     def close(self):
-        if len(self.buffer) > 0:
+        if self.buffer_current_size > 0:
             self.file_handle.write(self.buffer)
             self.buffer = ""
+            self.buffer_current_size = 0
         self.file_handle.close()
 
 class PickleFileWriter:
@@ -55,7 +56,7 @@ class PickleFileWriter:
         self.__open_file()
     
     def __del__(self):
-        if len(self.buffer) > 0:
+        if self.buffer_current_size > 0:
             pickle.dump(self.buffer,self.file_handle,-1)
         self.file_handle.close()
 
@@ -78,7 +79,8 @@ class PickleFileWriter:
             self.current_tell = self.file_handle.tell()
     
     def close(self):
-        if len(self.buffer) > 0:
+        if self.buffer_current_size > 0:
             pickle.dump(self.buffer,self.file_handle,-1)
             self.buffer = []
+            self.buffer_current_size = 0
         self.file_handle.close()
