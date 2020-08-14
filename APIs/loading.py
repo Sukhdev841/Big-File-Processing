@@ -15,11 +15,11 @@ class ProgressBar:
 
     def update(self):
         #str = "\r" + self.title + "\t\t|"
-        str = self.title + "\t\t|"
+        str = self.title + "  |"
         if self.state == 1:
             for i in range(self.m-1):
                 str += "."
-            str += "|\t"+self.message +"\t[Finished]"
+            str += "| "+self.message +" [Finished]"
             #print(str,end="")
             self.string = str
             return
@@ -32,19 +32,13 @@ class ProgressBar:
         for i in range(self.m-self.counter-len(self.dots)-1):
                 str += " "
         
-        str += "|\t" + self.message
+        str += "| " + self.message
 
         #print(str,end="")
         self.string = str
 
         self.counter += 1
         self.counter = self.counter%(self.m-len(self.dots))
-
-
-    def start(self):
-        self.state = 0
-        #self.t = Thread(target=self.__thread_func)
-        #self.t.start()
 
     def stop(self):
         self.state = 1

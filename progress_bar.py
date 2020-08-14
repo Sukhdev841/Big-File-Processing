@@ -18,20 +18,24 @@ class ProgressBars:
     def __update(self):
         finished_str = ""
         finished_index = []
+        updated_bars = []
         for i in range(len(self.bars)):
             if self.bars[i].state == 1:
                 """" This thread is finished """
                 self.bars[i].update()
-                finished_str += self.bars[i].string +"\n"
+                finished_str += self.bars[i].string +"\t\t"
                 finished_index.append(i)
+            else:
+                updated_bars.append(self.bars[i])
         
         if len(finished_index) > 0:
-            for index in finished_index:
-                del self.bars[index]
-            print("\n"+finished_str)
+            while len(finished_str) <= self.last_print_len:
+                finished_str += " "
 
-        if len(self.bars) == 0:
-            print("\nAll Tasks Finished.\n")
+            #del self.bars
+            self.bars = updated_bars
+
+            print("\r"+finished_str)
 
     def __thread_func(self):
 
@@ -43,12 +47,12 @@ class ProgressBars:
             if len(self.bars) == 0:
                 time.sleep(1)
                 continue
-            #sys.stdout.write("\033[2F")
-            #sys.stdout.flush()
-            to_print = "\rRunning Tasks : \t"
+            to_print = "\rRunning Tasks : "
             for i in range(len(self.bars)):
                 self.bars[i].update()
-                to_print += self.bars[i].string
+                to_print += self.bars[i].string + "\t\t"
+            
+            self.last_print_len = len(to_print)
             print(to_print,end="")
             time.sleep(0.05)
             self.__update()
@@ -67,24 +71,30 @@ class ProgressBars:
 
 def test():
 
+    pbs = ProgressBars()
+    pbs.start()
+
     pb1 = ProgressBar()
     pb1.title = "loading1"
-    pb1.start()
 
     pb2 = ProgressBar()
     pb2.title = "loading2"
-    pb2.start()
 
-    pbs = ProgressBars()
+    pb3 = ProgressBar()
+    pb3.title = "loading3"
+
+    
 
     pbs.add_progress_bar(pb1)
     pbs.add_progress_bar(pb2)
-    pbs.start()
+    pbs.add_progress_bar(pb3)
+    
 
-    time.sleep(1)
+    time.sleep(3)
 
     pb2.stop()
-
+    #time.sleep(1)
+    pb3.stop()
     time.sleep(4)
     pb1.stop()
 
