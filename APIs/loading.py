@@ -1,66 +1,62 @@
 import time
 from threading import Thread
 
-state = 0
-title = "Loading ISF"
-message = ""
-
-def thread_func():
-    global state
-    global message
-    global title
+class ProgressBar:
 
     counter = 0
     m = 15
     dots = "..."
-    
-    while True:
-        str = "\r" + title + "\t\t|"
 
-        if state == 1:
-            for i in range(m-1):
+    def __init__(self):
+        self.state = 0
+        self.title = "Loading"
+        self.message = ""
+        self.string = ""
+
+    def update(self):
+        #str = "\r" + self.title + "\t\t|"
+        str = self.title + "\t\t|"
+        if self.state == 1:
+            for i in range(self.m-1):
                 str += "."
-            str += "|\t"+message +"\t[Finished]"
-            print(str,end="")
-            break
+            str += "|\t"+self.message +"\t[Finished]"
+            #print(str,end="")
+            self.string = str
+            return
 
-        for i in range(counter):
+        for i in range(self.counter):
                 str += " "
         
-        str += dots
+        str += self.dots
 
-        for i in range(m-counter-len(dots)-1):
+        for i in range(self.m-self.counter-len(self.dots)-1):
                 str += " "
         
-        str += "|\t" + message
+        str += "|\t" + self.message
 
-        print(str,end="")
+        #print(str,end="")
+        self.string = str
 
-        counter += 1
-        counter = counter%(m-len(dots))
-        time.sleep(0.05)
+        self.counter += 1
+        self.counter = self.counter%(self.m-len(self.dots))
 
 
-def start_loading():
-    global state
-    global message
-    state = 0
-    t = Thread(target=thread_func)
-    t.start()
-    for i in range(1000):
-        message = str(i) + " Packets Proccessed."
-        time.sleep(0.1)
+    def start(self):
+        self.state = 0
+        #self.t = Thread(target=self.__thread_func)
+        #self.t.start()
+
+    def stop(self):
+        self.state = 1
+
+
+if __name__ == "__main__":
+
+    pb = ProgressBar()
+    pb.start()
+    for i in range(101):
+        pb.message = str(i) + " %"
+        time.sleep(0.03)
         if i == 100:
-            state = 1
+            pb.stop()
             break
-
-def stop_loading():
-    global state
-    state = 1
-
-def exec():
-    start_loading()
-    #time.sleep(10)
-    #stop_loading()
-
-exec()
